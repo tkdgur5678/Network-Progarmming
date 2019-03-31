@@ -1,0 +1,34 @@
+소켓은 인터넷상에서 물리적으로 떨어져있는 소프트웨어와 소프트웨어간의 통신을 담당하는 "소프트웨어 통신도구"다.
+
+소켓 만들기
+
+통신을 하기위해서는 socket(:4100)함수로 인터넷의 종단에 위치할 소켓을 만들어야 한다.
+SOCKET WSAAPI socket(
+ __in int af,
+ __in int type,
+ __in int protocol
+);
+af는 주소 영역을 지정하기 위해서 사용한다. 예컨데, 일반 인터넷 영역에서 통신할 건지, 아니면 IPX영역에서 통신할건지 등을
+결정하기 위해서 사용한다. 유별난 경우가 아니라면 인터넷 영역 통신을 위해서 AF_INET을 사용한다. 유닉스는 소켓을 IPC(내부 프로세스 통신)
+용도로 사용을 할 수 있다. 이를 위해서 AF_UNIX를 사용할 수 있는데, 윈속은 내부 통신 매커니즘을 지원하지 않는다.
+
+type은 소켓 타입을 지정하기 위해서 사용한다. 연결 지향의 TCP(:12) 통신이라면 SOCK_STREAM, UDP를 이용한 데이터 그램 중심의
+비 연결 지향 통신이라면 SOCK_DGRAM을 사용한다.
+
+protocol은 소켓이 사용할 프로토콜을 지정한다. type과 함께 쌍으로 지정한다. SOCK_STREAM이라면 IPPROTO_TCP,
+SOCK_DGRAM이라면 IPPROTO_UDP를 사용한다.
+
+즉 연결지향의 인터넷 소켓을 사용할 거라면 다음과 같이 지정한다.
+SOCKET sock;
+sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+소켓 특성 묶기
+
+socket함수로 만든 소켓이 접점에 놓이기 전에, 소켓 특성을 묶어야 한다. 즉 어떤 인터넷 주소 영역에 대해서 어떤 포트(:12)번호로 
+기다릴건지에 대한 정보를 소켓에 지정해 줘야 한다. bind(:4100)함수로 이 일을 할 수 있다.
+int bind(
+ __in SOCKET s,
+ __in const struct sockaddr *name,
+ __in int namelen
+);
+소켓 지시자 s에 sockaddr 구조체의 정보를 지정한다. struct sockaddr 구조체는 다음과 같다.
